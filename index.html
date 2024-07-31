@@ -209,11 +209,6 @@
             container.id = 'container'
             document.body.appendChild(container)
 
-            let textbox = document.createElement('input')
-            textbox.id = 'textbox'
-            textbox.type = 'text'
-            textbox.placeholder = 'Enter your message here'
-            container.appendChild(textbox);
 
             for (let i = 0; i < wheel_names.length; i++) {
                 let button = document.createElement('button')
@@ -232,6 +227,16 @@
                     textbox.value = ''
                 })
             }
+            let div = document.createElement('div')
+            container.appendChild(div)
+            let textbox = document.createElement('textarea')
+            textbox.id = 'textbox'
+            textbox.type = 'text'
+            textbox.style.margin = '20px'
+            textbox.cols = 60
+            textbox.rows = 15
+            textbox.placeholder = 'Enter your message here'
+            div.appendChild(textbox);
         }
 
         function wheels_to_data(wheels, wheel_names) {
@@ -264,16 +269,21 @@
                     let entry = document.createElement('div')
                     container.appendChild(entry)
 
-                    let task = document.createElement('p')
+                    let task = document.createElement('div')
                     task.style.fontSize = '12px'
                     task.style.marginRight = '30px'
                     task.innerText = wheels[wheel_names[i]][j]
                     task.style.display = 'inline-block'
+                    task.style.maxWidth = '70%'
+                    task.style.wordWrap = 'break-word'
+                    task.style.whiteSpace = 'normal'
+                    task.style.marginBottom = '10px'
                     entry.appendChild(task)
 
                     let button = document.createElement('button')
                     button.textContent = 'select'
                     button.style.fontSize = '12px'
+                    button.style.verticalAlign = 'top'
                     entry.appendChild(button)
 
                     button.addEventListener('click', function () {
