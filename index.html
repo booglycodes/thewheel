@@ -274,7 +274,7 @@
                     task.style.marginRight = '30px'
                     task.innerText = wheels[wheel_names[i]][j]
                     task.style.display = 'inline-block'
-                    task.style.maxWidth = '70%'
+                    task.style.width = '60%'
                     task.style.wordWrap = 'break-word'
                     task.style.whiteSpace = 'normal'
                     task.style.marginBottom = '10px'
@@ -288,9 +288,11 @@
 
                     button.addEventListener('click', function () {
                         if (button.textContent === 'select') {
+                            task.style.color = 'red'
                             button.textContent = 'unselect'
                             tasks_to_remove[wheel_names[i]].push(j)
                         } else if (button.textContent === 'unselect') {
+                            task.style.color = 'black'
                             button.textContent = 'select'
                             removeItem(tasks_to_remove[wheel_names[i]], j)
                         }
