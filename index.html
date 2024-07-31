@@ -155,7 +155,7 @@
             let counts = headers.values[1].map((val, _) => parseInt(val))
             let table
             if (Math.max(...counts) == 0) {
-                table = headers.values[0].map((_, __) => []) 
+                table = {values: headers.values[0].map((_, __) => [])}
             } else {
                 // then, read the table
                 table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
