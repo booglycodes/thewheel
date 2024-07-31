@@ -174,12 +174,6 @@
             container.id = 'container'
             document.body.appendChild(container)
 
-            let output = document.createElement('div')
-            output.id = 'output'
-            output.style.margin = '20px'
-            output.style.fontSize = '1.5em'
-            container.appendChild(output)
-
             for (let i = 0; i < wheel_names.length; i++) {
                 let button = document.createElement('button')
                 button.id = 'spin-' + wheel_names[i];
@@ -197,6 +191,12 @@
                     output.innerText = wheels[wheel_names[i]][randomNumber]
                 });
             }
+
+            let output = document.createElement('div')
+            output.id = 'output'
+            output.style.margin = '20px'
+            output.style.fontSize = '1.5em'
+            container.appendChild(output)
         }
 
         function add(wheels, wheel_names, authToken) {
