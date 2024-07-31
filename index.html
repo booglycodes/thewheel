@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Wheel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Wheel</h1>
+
+    <script language='JavaScript' type='text/javascript' src='https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js'></script>
+    <script>
+        const OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token'
+        const GOOGLE_SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
+        const GOOGLE_SHEETS_URL = 'https://sheets.googleapis.com/v4/spreadsheets/{0}/values/Sheet1!{1}?{2}'
+        const WHEEL_SHEETS_ID = '1ray4gflepLQH7RRHBEcuRZEIv7GfNlkQmqLbiCvCanA'
+        const SERVICE_ACCOUNT = {
+            'type': 'service_account',
+            'project_id': 'wheel-431014',
+            'private_key_id': '338665c2d750e1c4fe9d8475e2af962b593c7744',
+            'private_key': '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkTta0oWaWwtY+\nHTQEpvs5JJILd/rqR6w6+ByK6F2E/rjOPv3fv5Lr+hM1ThMNv/iIkK2BQWjXI5ut\nRtoL0X2zCnkaC4z3hgRN86fnbNzCLx0Y94k6S3ykMzVCQhdCWC3mqq8zc9rH7/4v\nETkMkvvAQ72cc8+hXnvW19cD8feIvGLLtarmRME52NJlFKQHpYKjnRuKU2oowxSQ\nAVXC3z6etmWbGdxXAJbYZ9bxKa22P7kavd5tNvxJxQf1U6VjksWheHXrx+d2Cg5J\nl7p5Q8i2VSqg3wdtKNcVe/EwBGT1gCSLN6kOgnQ1mZP+I75KoCThfDn2uaYwRYHT\nqcSOE/SdAgMBAAECggEACAcOVfPn6ky76jLWD7Yghw5CkK+YCoWCW09888uVPGa0\nHObx9/bJFOpDjLKqCO+6XAbgZGJ9XrvGbABX0nK11tYFXs5RhXj1Y+FPAtPnsz1Z\nUmAGQv+mJ/NLrcT53Tlw94ZRvpWV+JxTLho60BmHuoo93xya09a3RuvztADbDIri\n+E0A8JaWAN3tuuio/dNm0UPAltBJSF7nTxoQTSUi6ne/34qIIrQc6dN5onjerRDU\nmuLpq9q5DzsXTD8fD78vnuDtX3x2e6w2r9bL4Zm0sBj5ICAh/hkC1R/FJh6ahvEn\n+LgNg4SDt0uCqk/A6S2bo1cgdLePoPSMUmRQqo4SBwKBgQDkqg5Umbx0aaNY/bg5\nC0no0+5TpTgjoDlhcvP9aqqjcMCvKzWKjmIsvSwITTGi7kzWXIjwjGyeKwyW0sLs\nz4KNsyvYJZwg5u4WRvXKFRlg5RypFGTyx6vIF9h0knse4ls0iNQVSTJD8gq5jXQc\n/IC78iLyD2p6nrhMVAVaIlcevwKBgQC38z/cN3Oelb8nqQntUd0IB1c73wdcHQ5s\nJPdTfC1n15ZTYdEH/3UR7hwXoRoJ0LtFcvKlAOTWrftqmncZsjPY/RYnm0XZG8Hf\n04xJ6sB5kiSb2FGvIohpXZEfKRhC8/ilOuhBe7iWQIBysDnGVvkWc5//VkChnEMu\nFE08Ku3fowKBgQCRUSVUTHNAhBXkKzHVRsBMr8qo67nWoi91J6m5Zf1VawV5DPu0\ntzHa/smp6Ozff5PjMuFwBb3NcsxIWV65QlLUnIYDkjs7iabLD4OKTohXVKM3LJfO\n1mfr/IN56dFG2lFd/IrTkDXaikqYizW8aheh2YqtzHA9xvqWv1q7YlF9XwKBgGry\ns0M+visKlzvgzNO8z8x2MCKwFeBZSGRZza4tOVzxfAX4jgafYJpPHOgkEzZ3tBm5\nrhd/AI1MVCtzqSE4eWqEItheL2r992dB4IOtR8Cm1kABseQoKLVR4CkExIVQwVSX\nfidsXjKFR+jmSoDlWibSjMhwhl0vs+NbjFgaAXkPAoGARpieI8L/C49oO5PdKYlo\nsty9kg1+jxnsy46ToabmTxwaVh5iI6JJY2ePtCAr9VY8EWuQyl75dSYsGuHsztAE\nELUUP3i8g8DHyD063B7HzWvt5KXajeDGu95NEScZ6R6jATLNcDuNnY2llWq9lxB5\nW5H1ANiuKjCQrzgS8IS7Wns=\n-----END PRIVATE KEY-----\n',
+            'client_email': 'wheelacc@wheel-431014.iam.gserviceaccount.com',
+            'client_id': '114172704513412960649',
+            'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+            'token_uri': 'https://oauth2.googleapis.com/token',
+            'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
+            'client_x509_cert_url': 'https://www.googleapis.com/robot/v1/metadata/x509/wheelacc%40wheel-431014.iam.gserviceaccount.com',
+            'universe_domain': 'googleapis.com'
+        }
+
+        if (!String.prototype.format) {
+            String.prototype.format = function () {
+                var args = arguments
+                return this.replace(/{(\d+)}/g, function (match, number) {
+                    return typeof args[number] != 'undefined'
+                        ? args[number]
+                        : match
+                })
+            }
+        }
+
+        async function start() {
+            let authToken = await fetchAuthToken()
+            let [wheels, wheel_names] = await getWheels(authToken)
+            
+            let button
+            button = document.createElement('button')
+            button.id = 'add'
+            button.textContent = 'add'
+            button.style.margin = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            document.body.appendChild(button);
+            button.addEventListener('click', function() {
+                document.getElementById('container').remove()
+                add(wheels, wheel_names, authToken)
+            })
+
+            button = document.createElement('button')
+            button.id = 'spin'
+            button.textContent = 'spin'
+            button.style.margin = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            document.body.appendChild(button);
+            button.addEventListener('click', function() {
+                document.getElementById('container').remove()
+                spins(wheels, wheel_names, authToken)
+            })
+
+            button = document.createElement('button')
+            button.id = 'remove'
+            button.textContent = 'remove'
+            button.style.margin = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            document.body.appendChild(button);
+            button.addEventListener('click', function() {
+                document.getElementById('container').remove()
+                remove(wheels, wheel_names, authToken)
+            })
+
+            spins(wheels, wheel_names)
+        }
+
+        // see https://stackoverflow.com/questions/28751995/how-to-obtain-google-service-account-access-token-javascript
+        async function fetchAuthToken() {
+            let header = {
+                'alg': 'RS256',
+                'typ': 'JWT'
+            }
+            let claim = {
+                aud: OAUTH_URL,
+                scope: 'https://www.googleapis.com/auth/spreadsheets',
+                iss: SERVICE_ACCOUNT.client_email,
+                exp: KJUR.jws.IntDate.get('now + 1hour'),
+                iat: KJUR.jws.IntDate.get('now')
+            }
+            let jws = KJUR.jws.JWS.sign(null, JSON.stringify(header), JSON.stringify(claim), SERVICE_ACCOUNT.private_key)
+            let response = await fetch(OAUTH_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                    assertion: jws
+                })
+            })
+            let responseData = await response.json()
+            return responseData.access_token
+        }
+
+        async function readSheet(range, authToken, queryParams) {
+            let response = await fetch(GOOGLE_SHEETS_URL.format(WHEEL_SHEETS_ID, range, queryParams), {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + authToken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            return await response.json()
+        }
+
+        async function writeSheet(data, authToken) {
+            console.log(authToken)
+            let response = await fetch(GOOGLE_SHEETS_URL.format(WHEEL_SHEETS_ID, 'A1', 'valueInputOption=RAW'), {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + authToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    range: 'Sheet1!A1',
+                    majorDimension: 'COLUMNS',
+                    values: data
+                })
+            })
+            return await response.json()
+        }
+
+        async function getWheels(authToken) {
+            // first, read headers, that tells us the names of the wheels and how many elements are in each wheel
+            let headers = await readSheet('A1:C2', authToken, 'majorDimension=ROWS')
+            let wheel_names = headers.values[0]
+            let counts = headers.values[1].map((val, _) => parseInt(val))
+            // then, read the table
+            let table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
+            console.log(table)
+            let wheels = {}
+            for (let i = 0; i < wheel_names.length; i++) {
+                wheels[wheel_names[i]] = table.values[i]
+            }
+            console.log(wheels)
+            return [wheels, wheel_names]
+        }
+
+        function spins(wheels, wheel_names) {
+            let container = document.createElement('div')
+            container.id = 'container'
+            document.body.appendChild(container)
+
+            let output = document.createElement('div')
+            output.id = 'output'
+            output.style.margin = '20px'
+            output.style.fontSize = '1.5em'
+            container.appendChild(output)
+
+            for (let i = 0; i < wheel_names.length; i++) {
+                let button = document.createElement('button')
+                button.id = 'spin-' + wheel_names[i];
+                button.textContent = 'spin ' + wheel_names[i] + ' wheel'
+                button.style.margin = '20px'
+                button.style.fontSize = '16px'
+                button.style.cursor = 'pointer'
+                container.appendChild(button);
+                button.addEventListener('click', function () {
+                    let randomNumber = Math.floor(Math.random() * wheels[wheel_names[i]].length)
+                    output.innerText = wheels[wheel_names[i]][randomNumber]
+                });
+            }
+        }
+
+        function add(wheels, wheel_names, authToken) {
+            let container = document.createElement('div')
+            container.id = 'container'
+            document.body.appendChild(container)
+
+            let textbox = document.createElement('input')
+            textbox.id = 'textbox'
+            textbox.type = 'text'
+            textbox.placeholder = 'Enter your message here'
+            container.appendChild(textbox);
+
+            for (let i = 0; i < wheel_names.length; i++) {
+                let button = document.createElement('button')
+                button.id = 'add-' + wheel_names[i]
+                button.textContent = 'add to ' + wheel_names[i] + ' wheel'
+                button.style.margin = '20px'
+                button.style.fontSize = '16px'
+                button.style.cursor = 'pointer'
+                container.appendChild(button)
+                button.addEventListener('click', function () {
+                    if (textbox.value == '') {
+                        throw Error('task description is empty')
+                    }
+                    wheels[wheel_names[i]].push(textbox.value)
+                    writeSheet(wheels_to_data(wheels, wheel_names), authToken)
+                    textbox.value = ''
+                })
+            }
+        }
+
+        function wheels_to_data(wheels, wheel_names) {
+            let data = []
+            for (let x = 0; x < wheel_names.length; x++) {
+                let col = []
+                col.push(wheel_names[x])
+                col.push(wheels[wheel_names[x]].length + '')
+                for (let y = 0; y < wheels[wheel_names[x]].length; y++) {
+                    col.push(wheels[wheel_names[x]][y])
+                }
+                console.log(col)
+                data.push(col)
+            }
+            return data
+        }
+
+        function remove(wheels, wheel_names, authToken) {
+            let container = document.createElement('div')
+            container.id = 'container'
+            document.body.appendChild(container)
+
+            let tasks_to_remove = {}
+            for (let i = 0; i < wheel_names.length; i++) {
+                tasks_to_remove[wheel_names[i]] = []
+                let title = document.createElement('h1')
+                title.innerText = wheel_names[i]
+                container.appendChild(title)
+                for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
+                    let entry = document.createElement('div')
+                    container.appendChild(entry)
+
+                    let task = document.createElement('p')
+                    task.style.fontSize = '12px'
+                    task.style.marginRight = '30px'
+                    task.innerText = wheels[wheel_names[i]][j]
+                    task.style.display = 'inline-block'
+                    entry.appendChild(task)
+
+                    let button = document.createElement('button')
+                    button.textContent = 'select'
+                    button.style.fontSize = '12px'
+                    entry.appendChild(button)
+
+                    button.addEventListener('click', function () {
+                        if (button.textContent === 'select') {
+                            button.textContent = 'unselect'
+                            tasks_to_remove[wheel_names[i]].push(j)
+                        } else if (button.textContent === 'unselect') {
+                            button.textContent = 'select'
+                            removeItem(tasks_to_remove[wheel_names[i]], j)
+                        }
+                    })
+                }
+            }
+
+            let button = document.createElement('button')
+            button.textContent = 'remove selected'
+            button.style.margin = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            container.appendChild(button)
+            button.addEventListener('click', function () {
+                for (let i = 0; i < wheel_names.length; i++) {
+                    new_wheel = []
+                    for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
+                        if (!tasks_to_remove[wheel_names[i]].includes(j)) {
+                            new_wheel.push(wheels[wheel_names[i]][j])
+                        }
+                    }
+                    wheels[wheel_names[i]] = new_wheel
+                }
+                writeSheet(wheels_to_data(wheels, wheel_names), authToken)
+                document.getElementById('container').remove()
+                remove(wheels, wheel_names, authToken)
+            })
+        }
+
+        function removeItem(arr, value) {
+            var index = arr.indexOf(value)
+            if (index > -1) {
+                arr.splice(index, 1)
+            }
+            return arr
+        }
+
+        // alert on all errors
+        window.addEventListener('error', (e) => alert(e))
+        start()
+    </script>
+</body>
+
+</html>
