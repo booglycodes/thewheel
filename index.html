@@ -155,6 +155,8 @@
             let counts = headers.values[1].map((val, _) => parseInt(val))
             let table
             if (Math.max(...counts) == 0) {
+                // if counts are all zero, the range in readSheet below won't be correct. 
+                // instead, just populate empty for all wheels.
                 table = {values: headers.values[0].map((_, __) => [])}
             } else {
                 // then, read the table
@@ -163,7 +165,10 @@
             console.log(table)
             let wheels = {}
             for (let i = 0; i < wheel_names.length; i++) {
-                wheels[wheel_names[i]] = table.values[i]
+                wheels[wheel_names[i]] = []
+                for (let j = 0; j < counts[i]; j++) {
+                    wheels[wheel_names[i]].push(table.values[i][j])
+                }
             }
             console.log(wheels)
             return [wheels, wheel_names]
