@@ -153,8 +153,13 @@
             let headers = await readSheet('A1:C2', authToken, 'majorDimension=ROWS')
             let wheel_names = headers.values[0]
             let counts = headers.values[1].map((val, _) => parseInt(val))
-            // then, read the table
-            let table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
+            let table
+            if (Math.max(...counts) == 0) {
+                table = headers.values[0].map((_, __) => []) 
+            } else {
+                // then, read the table
+                table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
+            }
             console.log(table)
             let wheels = {}
             for (let i = 0; i < wheel_names.length; i++) {
@@ -184,6 +189,10 @@
                 button.style.cursor = 'pointer'
                 container.appendChild(button);
                 button.addEventListener('click', function () {
+                    if (wheels[wheel_names[i]].length === 0) {
+                        output.innerText = 'no tasks in this wheel'
+                        return
+                    }
                     let randomNumber = Math.floor(Math.random() * wheels[wheel_names[i]].length)
                     output.innerText = wheels[wheel_names[i]][randomNumber]
                 });
