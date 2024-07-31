@@ -132,7 +132,7 @@
         }
 
         async function writeSheet(data, authToken) {
-            console.log(authToken)
+            console.log(data)
             let response = await fetch(GOOGLE_SHEETS_URL.format(WHEEL_SHEETS_ID, 'A1', 'valueInputOption=RAW'), {
                 method: 'PUT',
                 headers: {
