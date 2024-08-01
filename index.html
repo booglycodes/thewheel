@@ -109,7 +109,7 @@
                 }
                 this.className = 'selected-button'
                 
-                this.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
+                this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 add(wheels, wheel_names, authToken)
                 state = 'add'
@@ -130,14 +130,14 @@
                     btn.style.boxShadow = 'none'
                 }
                 this.className = 'selected-button'
-                this.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
+                this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 spins(wheels, wheel_names, authToken)
                 state = 'spin'
             })
 
             button.className = 'selected-button'
-            button.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
+            button.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
 
             button = document.createElement('button')
             button.id = 'remove'
@@ -154,7 +154,7 @@
                     btn.style.boxShadow = 'none'
                 }
                 this.className = 'selected-button'
-                this.style.boxShadow = '0 0 0 4px rgba(0, 0, 0, 0.3)'
+                this.style.boxShadow = '0 0 0 5px rgba(0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 remove(wheels, wheel_names, authToken)
                 state = 'remove'
@@ -388,10 +388,11 @@
                     entry.style.verticalAlign = 'middle'
                     entry.style.alignItems = 'center'
                     entry.style.display = 'flex'
+                    entry.style.height = 'auto'
                     container.appendChild(entry)
 
                     let task = document.createElement('div')
-                    task.style.fontSize = '15px'
+                    task.style.fontSize = '16px'
                     task.style.marginRight = '30px'
                     task.innerText = wheels[wheel_names[i]][j]
                     task.style.display = 'inline-block'
@@ -431,9 +432,12 @@
 
             let button = document.createElement('button')
             button.textContent = 'remove selected'
-            button.style.margin = '20px'
+            button.style.marginLeft = '50px'
+            button.style.marginTop = '20px'
+            button.style.marginBottom = '200px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
+            button.className = 'button'
             container.appendChild(button)
             button.addEventListener('click', function () {
                 wheel_history.push(JSON.parse(JSON.stringify(wheels)))
