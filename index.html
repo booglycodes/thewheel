@@ -5,9 +5,45 @@
     <meta charset='UTF-8'>
     <title>Wheel</title>
     <style>
+        h1 {
+            padding-left: 20px;
+        }
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
         }
+        textarea {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px; /* Rounded corners */
+            border: 1px solid #ddd; /* Light border */
+            background-color: #fff; /* White background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+            resize: none; /* Prevent resizing */
+        }
+        /* Basic button styling */
+        button {
+            background-color: #d3d3d3; /* Light grey background */
+            color: #000000; /* Black text */
+            border: 1px solid #000000; /* Black border */
+            padding: 10px 20px; /* Padding for better appearance */
+            font-size: 16px; /* Font size */
+            font-family: Arial, sans-serif; /* Font family */
+            text-align: center; /* Center text */
+            cursor: pointer; /* Pointer cursor on hover */
+            border-radius: 4px; /* Rounded corners */
+            transition: background-color 0.3s ease; /* Smooth color transition */
+        }
+
+        /* Button hover effect */
+        .button:hover {
+            background-color: #f1f1f1;
+        }
+
+        .selected-button {
+            background-color: #5f8094;
+        }
+    </style>
     </style>
 </head>
 
@@ -48,10 +84,13 @@
             }
         }
 
+        let wheel_history = []
         async function start() {
             let authToken = await fetchAuthToken()
             let [wheels, wheel_names] = await getWheels(authToken)
             
+            let btns = []
+            let state = 'spin'
             let button
             button = document.createElement('button')
             button.id = 'add'
@@ -59,10 +98,20 @@
             button.style.margin = '20px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
+            button.className = 'button'
             document.body.appendChild(button);
+            btns.push(button)
             button.addEventListener('click', function() {
+                for (let btn of btns) {
+                    btn.className = 'button'
+                    btn.style.boxShadow = 'none'
+                }
+                this.className = 'selected-button'
+                
+                this.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 add(wheels, wheel_names, authToken)
+                state = 'add'
             })
 
             button = document.createElement('button')
@@ -71,11 +120,23 @@
             button.style.margin = '20px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
+            button.className = 'button'
             document.body.appendChild(button);
+            btns.push(button)
             button.addEventListener('click', function() {
+                for (let btn of btns) {
+                    btn.className = 'button'
+                    btn.style.boxShadow = 'none'
+                }
+                this.className = 'selected-button'
+                this.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 spins(wheels, wheel_names, authToken)
+                state = 'spin'
             })
+
+            button.className = 'selected-button'
+            button.style.boxShadow = '0 0 0 4px rgba(1.0, 0, 0, 0.3)'
 
             button = document.createElement('button')
             button.id = 'remove'
@@ -83,10 +144,43 @@
             button.style.margin = '20px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
+            button.className = 'button'
             document.body.appendChild(button);
+            btns.push(button)
             button.addEventListener('click', function() {
+                for (let btn of btns) {
+                    btn.className = 'button'
+                    btn.style.boxShadow = 'none'
+                }
+                this.className = 'selected-button'
+                this.style.boxShadow = '0 0 0 4px rgba(0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
                 remove(wheels, wheel_names, authToken)
+                state = 'remove'
+            })
+
+            button = document.createElement('button')
+            button.id = 'undo'
+            button.textContent = 'undo'
+            button.style.margin = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            button.className = 'button'
+            document.body.appendChild(button);
+            button.addEventListener('click', function() {
+                if (wheel_history.length === 0) {
+                    throw new Error('cannot undo further')
+                }
+                wheels = wheel_history.pop()
+                writeSheet(wheels_to_data(wheels, wheel_names), authToken)
+                document.getElementById('container').remove()
+                if (state === 'remove') {
+                    remove(wheels, wheel_names, authToken)
+                } else if (state === 'spin') {
+                    spins(wheels, wheel_names, authToken)
+                } else if (state === 'add') {
+                    add(wheels, wheel_names, authToken)
+                }
             })
 
             spins(wheels, wheel_names)
@@ -186,6 +280,7 @@
                 button.style.margin = '20px'
                 button.style.fontSize = '16px'
                 button.style.cursor = 'pointer'
+                button.className = 'button'
                 container.appendChild(button);
                 button.addEventListener('click', function () {
                     if (wheels[wheel_names[i]].length === 0) {
@@ -194,7 +289,7 @@
                     }
                     let randomNumber = Math.floor(Math.random() * wheels[wheel_names[i]].length)
                     output.innerText = wheels[wheel_names[i]][randomNumber]
-                });
+                })
             }
 
             let output = document.createElement('div')
@@ -209,7 +304,6 @@
             container.id = 'container'
             document.body.appendChild(container)
 
-
             for (let i = 0; i < wheel_names.length; i++) {
                 let button = document.createElement('button')
                 button.id = 'add-' + wheel_names[i]
@@ -217,11 +311,13 @@
                 button.style.margin = '20px'
                 button.style.fontSize = '16px'
                 button.style.cursor = 'pointer'
+                button.className = 'button'
                 container.appendChild(button)
                 button.addEventListener('click', function () {
                     if (textbox.value == '') {
                         throw Error('task description is empty')
                     }
+                    wheel_history.push(JSON.parse(JSON.stringify(wheels)))
                     wheels[wheel_names[i]].push(textbox.value)
                     writeSheet(wheels_to_data(wheels, wheel_names), authToken)
                     textbox.value = ''
@@ -235,7 +331,7 @@
             textbox.style.margin = '20px'
             textbox.cols = 60
             textbox.rows = 15
-            textbox.placeholder = 'Enter your message here'
+            textbox.placeholder = 'Enter spin here'
             div.appendChild(textbox);
         }
 
@@ -264,36 +360,62 @@
                 tasks_to_remove[wheel_names[i]] = []
                 let title = document.createElement('h1')
                 title.innerText = wheel_names[i]
+                title.style.display = 'inline-block'
+                title.style.marginRight = '5px'
+                title.style.marginBottom = '1vh'
                 container.appendChild(title)
+
+                let count = document.createElement('p')
+                count.innerText = '(' + wheels[wheel_names[i]].length + ')'
+                count.style.display = 'inline'
+                container.appendChild(count)
+
                 for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
                     let entry = document.createElement('div')
+                    if (j % 2 === 0) {
+                        entry.style.background = 'darkgrey'
+                    } else {
+                        entry.style.background = 'lightgrey'
+                    }
+                    entry.style.width = '70%'
+                    entry.style.verticalAlign = 'middle'
+                    entry.style.alignItems = 'center'
+                    entry.style.display = 'flex'
                     container.appendChild(entry)
 
                     let task = document.createElement('div')
-                    task.style.fontSize = '12px'
+                    task.style.fontSize = '15px'
                     task.style.marginRight = '30px'
                     task.innerText = wheels[wheel_names[i]][j]
                     task.style.display = 'inline-block'
-                    task.style.width = '60%'
+                    task.style.width = 'auto'
                     task.style.wordWrap = 'break-word'
                     task.style.whiteSpace = 'normal'
                     task.style.marginBottom = '10px'
+                    task.style.marginTop = '10px'
+                    task.style.marginLeft = '5px'
+                    task.style.cursor = 'default'
+                    task.className = 'noselect'
                     entry.appendChild(task)
 
-                    let button = document.createElement('button')
-                    button.textContent = 'select'
-                    button.style.fontSize = '12px'
-                    button.style.verticalAlign = 'top'
-                    entry.appendChild(button)
-
-                    button.addEventListener('click', function () {
-                        if (button.textContent === 'select') {
-                            task.style.color = 'red'
-                            button.textContent = 'unselect'
+                    let selected = false
+                    entry.addEventListener('click', function () {
+                        console.log(entry.style.background)
+                        if (!selected) {
+                            selected = true
+                            if (j % 2 === 0) {
+                                entry.style.background = '#F07971'
+                            } else {
+                                entry.style.background = '#FAA0A0'
+                            }
                             tasks_to_remove[wheel_names[i]].push(j)
-                        } else if (button.textContent === 'unselect') {
-                            task.style.color = 'black'
-                            button.textContent = 'select'
+                        } else {
+                            selected = false
+                            if (j % 2 === 0) {
+                                entry.style.background = 'darkgrey'
+                            } else {
+                                entry.style.background = 'lightgrey'
+                            }
                             removeItem(tasks_to_remove[wheel_names[i]], j)
                         }
                     })
@@ -307,6 +429,7 @@
             button.style.cursor = 'pointer'
             container.appendChild(button)
             button.addEventListener('click', function () {
+                wheel_history.push(JSON.parse(JSON.stringify(wheels)))
                 for (let i = 0; i < wheel_names.length; i++) {
                     new_wheel = []
                     for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
@@ -331,9 +454,8 @@
         }
 
         // alert on all errors
-        window.addEventListener('error', (e) => alert(e))
+        window.addEventListener('error', (e) => alert(e.message))
         start()
     </script>
 </body>
-
 </html>
