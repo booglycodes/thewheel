@@ -14,20 +14,22 @@
             background-color: #f0f0f0;
         }
         textarea {
-            padding: 10px;
             font-size: 16px;
             border-radius: 8px; /* Rounded corners */
             border: 1px solid #ddd; /* Light border */
             background-color: #fff; /* White background */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
             resize: none; /* Prevent resizing */
+            width:max-content;
+            margin-left: 10px;
+            margin-top: 10px;
         }
         /* Basic button styling */
         button {
             background-color: #d3d3d3; /* Light grey background */
             color: #000000; /* Black text */
             border: 1px solid #000000; /* Black border */
-            padding: 10px 20px; /* Padding for better appearance */
+            padding: 10px 15px; /* Padding for better appearance */
             font-size: 16px; /* Font size */
             font-family: Arial, sans-serif; /* Font family */
             text-align: center; /* Center text */
@@ -43,6 +45,12 @@
 
         .selected-button {
             background-color: #5f8094;
+        }
+
+        @media (max-width: 400px) {
+            .lower-button {
+                margin-right: 100px;
+            }
         }
     </style>
     </style>
@@ -97,7 +105,7 @@
             button = document.createElement('button')
             button.id = 'add'
             button.textContent = 'add'
-            button.style.margin = '20px'
+            button.style.marginLeft = '10px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
             button.className = 'button'
@@ -107,8 +115,10 @@
                 for (let btn of btns) {
                     btn.className = 'button'
                     btn.style.boxShadow = 'none'
+                    btn.style.marginLeft = '10px'
                 }
                 this.className = 'selected-button'
+                this.style.marginLeft = '10px'
                 
                 this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
                 document.getElementById('container').remove()
@@ -119,7 +129,7 @@
             button = document.createElement('button')
             button.id = 'spin'
             button.textContent = 'spin'
-            button.style.margin = '20px'
+            button.style.marginLeft = '10px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
             button.className = 'button'
@@ -129,6 +139,7 @@
                 for (let btn of btns) {
                     btn.className = 'button'
                     btn.style.boxShadow = 'none'
+                    btn.style.marginLeft = '10px'
                 }
                 this.className = 'selected-button'
                 this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
@@ -143,7 +154,7 @@
             button = document.createElement('button')
             button.id = 'remove'
             button.textContent = 'remove'
-            button.style.margin = '20px'
+            button.style.marginLeft = '10px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
             button.className = 'button'
@@ -153,6 +164,7 @@
                 for (let btn of btns) {
                     btn.className = 'button'
                     btn.style.boxShadow = 'none'
+                    btn.style.marginLeft = '10px'
                 }
                 this.className = 'selected-button'
                 this.style.boxShadow = '0 0 0 5px rgba(0, 0, 0, 0.3)'
@@ -164,7 +176,7 @@
             button = document.createElement('button')
             button.id = 'undo'
             button.textContent = 'undo'
-            button.style.margin = '20px'
+            button.style.marginLeft = '10px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
             button.className = 'button'
@@ -276,15 +288,19 @@
             document.body.appendChild(container)
 
             let numSpins = document.createElement('div')
-            numSpins.style.margin = '20px'
+            numSpins.style.marginTop = '10px'
+            numSpins.style.marginLeft = '10px'
+            numSpins.style.marginBottom = '10px'
             for (let i = 0; i < wheel_names.length; i++) {
                 let button = document.createElement('button')
                 button.id = 'spin-' + wheel_names[i];
                 button.textContent = 'spin ' + wheel_names[i] + ' wheel'
-                button.style.margin = '20px'
-                button.style.fontSize = '16px'
+                button.style.marginLeft = '10px'
+                button.style.marginTop = '10px'
+                button.style.marginBottom = '0px'
+                button.style.fontSize = '12px'
                 button.style.cursor = 'pointer'
-                button.className = 'button'
+                button.className = 'button lower-button'
                 container.appendChild(button);
                 button.addEventListener('click', function () {
                     if (wheels[wheel_names[i]].length === 0) {
@@ -302,7 +318,7 @@
 
             let output = document.createElement('div')
             output.id = 'output'
-            output.style.margin = '20px'
+            output.style.margin = '10px'
             output.style.fontSize = '1.5em'
             container.appendChild(output)
         }
@@ -316,10 +332,12 @@
                 let button = document.createElement('button')
                 button.id = 'add-' + wheel_names[i]
                 button.textContent = 'add to ' + wheel_names[i] + ' wheel'
-                button.style.margin = '20px'
-                button.style.fontSize = '16px'
+                button.style.marginLeft = '10px'
+                button.style.marginTop = '10px'
+                button.style.marginBottom = '0px'
+                button.style.fontSize = '12px'
                 button.style.cursor = 'pointer'
-                button.className = 'button'
+                button.className = 'button lower-button'
                 container.appendChild(button)
                 button.addEventListener('click', function () {
                     if (textbox.value == '') {
@@ -336,10 +354,14 @@
             let textbox = document.createElement('textarea')
             textbox.id = 'textbox'
             textbox.type = 'text'
-            textbox.style.margin = '20px'
-            textbox.cols = 60
-            textbox.rows = 15
             textbox.placeholder = 'Enter spin here'
+            if (window.innerWidth > 1000) {
+                textbox.rows = 20
+                textbox.cols = 100
+            } else {
+                textbox.rows = 5
+                textbox.cols = 30
+            }
             div.appendChild(textbox);
         }
 
@@ -385,7 +407,7 @@
                     } else {
                         entry.style.background = 'lightgrey'
                     }
-                    entry.style.width = '70%'
+                    entry.style.maxWidth = '1200px'
                     entry.style.verticalAlign = 'middle'
                     entry.style.alignItems = 'center'
                     entry.style.display = 'flex'
