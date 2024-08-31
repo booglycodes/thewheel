@@ -57,7 +57,21 @@
 </head>
 
 <body>
-    <h1>Wheel</h1>
+    <h1>Wheel
+        <a onclick="undo()">
+            <svg fill="#000000" width="30px" height="30px" viewBox="0 0 32 32" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <style>
+                    .cls-1 {
+                      fill: none;
+                    }
+                  </style>
+                </defs>
+                <path d="M20,10H7.8149l3.5874-3.5859L10,5,4,11,10,17l1.4023-1.4146L7.8179,12H20a6,6,0,0,1,0,12H12v2h8a8,8,0,0,0,0-16Z"/>
+                <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+            </svg> 
+        </a>
+    </h1>
 
     <script language='JavaScript' type='text/javascript' src='https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js'></script>
     <script>
@@ -95,109 +109,80 @@
 
         let wheel_history = []
         let spin_counter = {}
+        let current_spin = ''
+        let names_of_wheels
+        let authToken
+        let state
         async function start() {
-            let authToken = await fetchAuthToken()
+            authToken = await fetchAuthToken()
             let [wheels, wheel_names] = await getWheels(authToken)
-            
+            names_of_wheels = wheel_names
             let btns = []
-            let state = 'spin'
-            let button
-            button = document.createElement('button')
-            button.id = 'add'
-            button.textContent = 'add'
-            button.style.marginLeft = '10px'
-            button.style.fontSize = '16px'
-            button.style.cursor = 'pointer'
-            button.className = 'button'
-            document.body.appendChild(button);
-            btns.push(button)
-            button.addEventListener('click', function() {
-                for (let btn of btns) {
-                    btn.className = 'button'
-                    btn.style.boxShadow = 'none'
-                    btn.style.marginLeft = '10px'
-                }
-                this.className = 'selected-button'
-                this.style.marginLeft = '10px'
-                
-                this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
-                document.getElementById('container').remove()
-                add(wheels, wheel_names, authToken)
-                state = 'add'
-            })
-
-            button = document.createElement('button')
-            button.id = 'spin'
-            button.textContent = 'spin'
-            button.style.marginLeft = '10px'
-            button.style.fontSize = '16px'
-            button.style.cursor = 'pointer'
-            button.className = 'button'
-            document.body.appendChild(button);
-            btns.push(button)
-            button.addEventListener('click', function() {
-                for (let btn of btns) {
-                    btn.className = 'button'
-                    btn.style.boxShadow = 'none'
-                    btn.style.marginLeft = '10px'
-                }
-                this.className = 'selected-button'
-                this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
-                document.getElementById('container').remove()
-                spins(wheels, wheel_names, authToken)
-                state = 'spin'
-            })
-
-            button.className = 'selected-button'
-            button.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
-
-            button = document.createElement('button')
-            button.id = 'remove'
-            button.textContent = 'remove'
-            button.style.marginLeft = '10px'
-            button.style.fontSize = '16px'
-            button.style.cursor = 'pointer'
-            button.className = 'button'
-            document.body.appendChild(button);
-            btns.push(button)
-            button.addEventListener('click', function() {
-                for (let btn of btns) {
-                    btn.className = 'button'
-                    btn.style.boxShadow = 'none'
-                    btn.style.marginLeft = '10px'
-                }
-                this.className = 'selected-button'
-                this.style.boxShadow = '0 0 0 5px rgba(0, 0, 0, 0.3)'
-                document.getElementById('container').remove()
-                remove(wheels, wheel_names, authToken)
-                state = 'remove'
-            })
-
-            button = document.createElement('button')
-            button.id = 'undo'
-            button.textContent = 'undo'
-            button.style.marginLeft = '10px'
-            button.style.fontSize = '16px'
-            button.style.cursor = 'pointer'
-            button.className = 'button'
-            document.body.appendChild(button);
-            button.addEventListener('click', function() {
-                if (wheel_history.length === 0) {
-                    throw new Error('cannot undo further')
-                }
-                wheels = wheel_history.pop()
-                writeSheet(wheels_to_data(wheels, wheel_names), authToken)
-                document.getElementById('container').remove()
-                if (state === 'remove') {
-                    remove(wheels, wheel_names, authToken)
-                } else if (state === 'spin') {
-                    spins(wheels, wheel_names, authToken)
-                } else if (state === 'add') {
-                    add(wheels, wheel_names, authToken)
-                }
-            })
-
+            state = 'spin'
+            for (let btn of [['add', add], ['spin', spins], ['remove', remove], ['rand', rand]]) {
+                let button = document.createElement('button')
+                button.id = btn[0]
+                button.textContent = btn[0]
+                button.style.marginLeft = '10px'
+                button.style.fontSize = '16px'
+                button.style.cursor = 'pointer'
+                button.className = 'button'
+                document.body.appendChild(button);
+                btns.push(button)
+                button.addEventListener('click', function() {
+                    for (let btn of btns) {
+                        btn.className = 'button'
+                        btn.style.boxShadow = 'none'
+                        btn.style.marginLeft = '10px'
+                    }
+                    this.className = 'selected-button'
+                    this.style.marginLeft = '10px'
+                    
+                    this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
+                    cleanslate()
+                    btn[1](wheels, wheel_names, authToken)
+                    state = btn[0]
+                })
+            }
+            btns[1].className = 'selected-button'
+            btns[1].style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
+            let wheel_dropdown_container = document.createElement('div')
+            let wheel_dropdown = document.createElement('select')
+            wheel_dropdown.style.marginTop = '15px'
+            wheel_dropdown.style.marginLeft = '10px'
+            wheel_dropdown.style.fontSize = '16px'
+            wheel_dropdown.id = 'wheel-dropdown'
+            for (let wheel_name of wheel_names) {
+                let option = document.createElement('option')
+                option.value = wheel_name
+                option.innerText = wheel_name 
+                wheel_dropdown.appendChild(option)
+            }
+            wheel_dropdown_container.appendChild(wheel_dropdown)
+            document.body.appendChild(wheel_dropdown_container)
             spins(wheels, wheel_names)
+        }
+
+        function undo() {
+            if (wheel_history.length === 0) {
+                throw new Error('cannot undo further')
+            }
+            let wheels = wheel_history.pop()
+            writeSheet(wheels_to_data(wheels, names_of_wheels), authToken)
+            alert('undo successful')
+            cleanslate()
+            if (state === 'remove') {
+                remove(wheels, names_of_wheels, authToken)
+            } else if (state === 'spin') {
+                spins(wheels, names_of_wheels, authToken)
+            } else if (state === 'add') {
+                add(wheels, names_of_wheels, authToken)
+            }
+        }
+
+        function cleanslate() {
+            document.getElementById('wheel-dropdown').style.display = ''
+            document.getElementById('container').remove()
         }
 
         // see https://stackoverflow.com/questions/28751995/how-to-obtain-google-service-account-access-token-javascript
@@ -291,31 +276,36 @@
             numSpins.style.marginTop = '10px'
             numSpins.style.marginLeft = '10px'
             numSpins.style.marginBottom = '10px'
-            for (let i = 0; i < wheel_names.length; i++) {
-                if (spin_counter[wheel_names[i]] === undefined) {
-                    spin_counter[wheel_names[i]] = 0
+
+            for (let wheel_name of wheel_names) {
+                if (spin_counter[wheel_name] === undefined) {
+                    spin_counter[wheel_name] = 0
                 }
-                let button = document.createElement('button')
-                button.id = 'spin-' + wheel_names[i];
-                button.textContent = 'spin ' + wheel_names[i] + ' wheel'
-                button.style.marginLeft = '10px'
-                button.style.marginTop = '10px'
-                button.style.marginBottom = '0px'
-                button.style.fontSize = '12px'
-                button.style.cursor = 'pointer'
-                button.className = 'button lower-button'
-                container.appendChild(button);
-                button.addEventListener('click', function () {
-                    if (wheels[wheel_names[i]].length === 0) {
-                        output.innerText = 'no tasks in this wheel'
-                        return
-                    }
-                    let randomNumber = Math.floor(Math.random() * wheels[wheel_names[i]].length)
-                    output.innerText = wheels[wheel_names[i]][randomNumber]
-                    spin_counter[wheel_names[i]] += 1
-                    numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
-                })
             }
+
+            let button = document.createElement('button')
+            button.id = 'spin';
+            button.textContent = 'jamble!'
+            button.style.marginLeft = '10px'
+            button.style.marginTop = '10px'
+            button.style.marginBottom = '0px'
+            button.style.fontSize = '12px'
+            button.style.cursor = 'pointer'
+            button.className = 'button lower-button'
+            container.appendChild(button)
+            button.addEventListener('click', function () {
+                let wheel = document.getElementById('wheel-dropdown').value
+                if (wheels[wheel].length === 0) {
+                    output.innerText = 'no tasks in this wheel'
+                    return
+                }
+                let randomNumber = Math.floor(Math.random() * wheels[wheel].length)
+                current_spin = wheels[wheel][randomNumber]
+                output.innerText = current_spin
+                spin_counter[wheel] += 1
+                numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
+            })
+            
             numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
             container.appendChild(numSpins)
 
@@ -323,6 +313,7 @@
             output.id = 'output'
             output.style.margin = '10px'
             output.style.fontSize = '1.5em'
+            output.innerText = current_spin
             container.appendChild(output)
         }
 
@@ -330,28 +321,6 @@
             let container = document.createElement('div')
             container.id = 'container'
             document.body.appendChild(container)
-
-            for (let i = 0; i < wheel_names.length; i++) {
-                let button = document.createElement('button')
-                button.id = 'add-' + wheel_names[i]
-                button.textContent = 'add to ' + wheel_names[i] + ' wheel'
-                button.style.marginLeft = '10px'
-                button.style.marginTop = '10px'
-                button.style.marginBottom = '0px'
-                button.style.fontSize = '12px'
-                button.style.cursor = 'pointer'
-                button.className = 'button lower-button'
-                container.appendChild(button)
-                button.addEventListener('click', function () {
-                    if (textbox.value == '') {
-                        throw Error('task description is empty')
-                    }
-                    wheel_history.push(JSON.parse(JSON.stringify(wheels)))
-                    wheels[wheel_names[i]].push(textbox.value)
-                    writeSheet(wheels_to_data(wheels, wheel_names), authToken)
-                    textbox.value = ''
-                })
-            }
             let div = document.createElement('div')
             container.appendChild(div)
             let textbox = document.createElement('textarea')
@@ -366,6 +335,27 @@
                 textbox.cols = 30
             }
             div.appendChild(textbox);
+
+            let button = document.createElement('button')
+            button.id = 'add'
+            button.textContent = 'add'
+            button.style.marginLeft = '10px'
+            button.style.marginTop = '10px'
+            button.style.marginBottom = '0px'
+            button.style.fontSize = '12px'
+            button.style.cursor = 'pointer'
+            button.className = 'button lower-button'
+            container.appendChild(button)
+            button.addEventListener('click', function () {
+                if (textbox.value == '') {
+                    throw Error('task description is empty')
+                }
+                wheel_history.push(JSON.parse(JSON.stringify(wheels)))
+                let wheel = document.getElementById('wheel-dropdown').value
+                wheels[wheel].push(textbox.value)
+                writeSheet(wheels_to_data(wheels, wheel_names), authToken)
+                textbox.value = ''
+            })
         }
 
         function wheels_to_data(wheels, wheel_names) {
@@ -387,6 +377,7 @@
             let container = document.createElement('div')
             container.id = 'container'
             document.body.appendChild(container)
+            document.getElementById('wheel-dropdown').style.display = 'none'
 
             let tasks_to_remove = {}
             for (let i = 0; i < wheel_names.length; i++) {
@@ -402,7 +393,6 @@
                 count.innerText = '(' + wheels[wheel_names[i]].length + ')'
                 count.style.display = 'inline'
                 container.appendChild(count)
-
                 for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
                     let entry = document.createElement('div')
                     if (j % 2 === 0) {
@@ -489,6 +479,83 @@
             }
             return arr
         }
+
+        function opt(name) {
+            let opt = document.createElement('option')
+            opt.value = name
+            opt.innerText = name
+            return opt
+        }
+
+        function rand() {
+            let container = document.createElement('div')
+            container.id = 'container'
+            document.body.appendChild(container)
+            document.getElementById('wheel-dropdown').style.display = 'none'
+
+            let rand_dropdown = document.createElement('select')
+            rand_dropdown.style.marginTop = '15px'
+            rand_dropdown.style.marginLeft = '10px'
+            rand_dropdown.style.fontSize = '16px'
+            rand_dropdown.id = 'rand-dropdown'
+            rand_dropdown.appendChild(opt('random-ordering'))
+            rand_dropdown.appendChild(opt('random-number'))
+            rand_dropdown.appendChild(opt('coinflip'))
+            container.appendChild(rand_dropdown)
+
+            let numinput = document.createElement('input')
+            numinput.type = 'number'
+            numinput.value = '3'
+            numinput.style.marginTop = '15px'
+            numinput.style.marginLeft = '10px'
+            numinput.style.fontSize = '16px'
+            numinput.addEventListener('keyup', function() {
+                numinput.value = numinput.value.replace(/[^0-9]/g, '');
+            })
+            container.appendChild(numinput)
+
+            let button = document.createElement('button')
+            button.textContent = 'go!'
+            button.style.marginLeft = '50px'
+            button.style.marginTop = '20px'
+            button.style.fontSize = '16px'
+            button.style.cursor = 'pointer'
+            button.className = 'button'
+            container.appendChild(button)
+
+            let output = document.createElement('div')
+            button.addEventListener('click', function() {
+                if (rand_dropdown.value == 'coinflip') {
+                    alert(Math.random() < 0.5 ? 'Heads' : 'Tails')
+                }
+                if (rand_dropdown.value == 'random-ordering') {
+
+                    alert(getRandomOrdering(parseInt(numinput.value)))
+                }
+                if (rand_dropdown.value == 'random-number') {
+
+                    alert(getRandomNumber(1, parseInt(numinput.value)))
+                }
+            })
+        }
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomOrdering(n) {
+    // Create an array of numbers from 1 to n
+    let arr = Array.from({ length: n }, (_, i) => i + 1);
+
+    // Shuffle the array using the Fisher-Yates algorithm
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+    }
+
+    return arr;
+}
+
 
         // alert on all errors
         window.addEventListener('error', (e) => alert(e.message))
