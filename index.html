@@ -94,7 +94,7 @@
         }
 
         let wheel_history = []
-        let spin_counter = 0
+        let spin_counter = {}
         async function start() {
             let authToken = await fetchAuthToken()
             let [wheels, wheel_names] = await getWheels(authToken)
@@ -292,6 +292,9 @@
             numSpins.style.marginLeft = '10px'
             numSpins.style.marginBottom = '10px'
             for (let i = 0; i < wheel_names.length; i++) {
+                if (spin_counter[wheel_names[i]] === undefined) {
+                    spin_counter[wheel_names[i]] = 0
+                }
                 let button = document.createElement('button')
                 button.id = 'spin-' + wheel_names[i];
                 button.textContent = 'spin ' + wheel_names[i] + ' wheel'
@@ -309,11 +312,11 @@
                     }
                     let randomNumber = Math.floor(Math.random() * wheels[wheel_names[i]].length)
                     output.innerText = wheels[wheel_names[i]][randomNumber]
-                    spin_counter += 1
-                    numSpins.textContent = 'Spins: ' + spin_counter
+                    spin_counter[wheel_names[i]] += 1
+                    numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
                 })
             }
-            numSpins.textContent = 'Spins: ' + spin_counter
+            numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
             container.appendChild(numSpins)
 
             let output = document.createElement('div')
