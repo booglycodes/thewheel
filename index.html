@@ -9,33 +9,51 @@
         h1 {
             padding-left: 20px;
         }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
         }
+
         textarea {
             font-size: 16px;
-            border-radius: 8px; /* Rounded corners */
-            border: 1px solid #ddd; /* Light border */
-            background-color: #fff; /* White background */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
-            resize: none; /* Prevent resizing */
-            width:max-content;
+            border-radius: 8px;
+            /* Rounded corners */
+            border: 1px solid #ddd;
+            /* Light border */
+            background-color: #fff;
+            /* White background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* Add a slight shadow */
+            resize: none;
+            /* Prevent resizing */
+            width: max-content;
             margin-left: 10px;
             margin-top: 10px;
         }
+
         /* Basic button styling */
         button {
-            background-color: #d3d3d3; /* Light grey background */
-            color: #000000; /* Black text */
-            border: 1px solid #000000; /* Black border */
-            padding: 10px 15px; /* Padding for better appearance */
-            font-size: 16px; /* Font size */
-            font-family: Arial, sans-serif; /* Font family */
-            text-align: center; /* Center text */
-            cursor: pointer; /* Pointer cursor on hover */
-            border-radius: 4px; /* Rounded corners */
-            transition: background-color 0.3s ease; /* Smooth color transition */
+            background-color: #d3d3d3;
+            /* Light grey background */
+            color: #000000;
+            /* Black text */
+            border: 1px solid #000000;
+            /* Black border */
+            padding: 10px 15px;
+            /* Padding for better appearance */
+            font-size: 16px;
+            /* Font size */
+            font-family: Arial, sans-serif;
+            /* Font family */
+            text-align: center;
+            /* Center text */
+            cursor: pointer;
+            /* Pointer cursor on hover */
+            border-radius: 4px;
+            /* Rounded corners */
+            transition: background-color 0.3s ease;
+            /* Smooth color transition */
         }
 
         /* Button hover effect */
@@ -59,21 +77,25 @@
 <body>
     <h1>Wheel
         <a onclick="undo()">
-            <svg fill="#000000" width="30px" height="30px" viewBox="0 0 32 32" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
+            <svg fill="#000000" width="30px" height="30px" viewBox="0 0 32 32" id="Layer_1" data-name="Layer 1"
+                xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <style>
-                    .cls-1 {
-                      fill: none;
-                    }
-                  </style>
+                    <style>
+                        .cls-1 {
+                            fill: none;
+                        }
+                    </style>
                 </defs>
-                <path d="M20,10H7.8149l3.5874-3.5859L10,5,4,11,10,17l1.4023-1.4146L7.8179,12H20a6,6,0,0,1,0,12H12v2h8a8,8,0,0,0,0-16Z"/>
-                <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
-            </svg> 
+                <path
+                    d="M20,10H7.8149l3.5874-3.5859L10,5,4,11,10,17l1.4023-1.4146L7.8179,12H20a6,6,0,0,1,0,12H12v2h8a8,8,0,0,0,0-16Z" />
+                <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32"
+                    height="32" />
+            </svg>
         </a>
     </h1>
 
-    <script language='JavaScript' type='text/javascript' src='https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js'></script>
+    <script language='JavaScript' type='text/javascript'
+        src='https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js'></script>
     <script>
         const OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token'
         const GOOGLE_SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
@@ -82,9 +104,9 @@
         const SERVICE_ACCOUNT = {
             'type': 'service_account',
             'project_id': 'wheel-431014',
-            'private_key_id': '338665c2d750' + 'e1c4fe' + 
+            'private_key_id': '338665c2d750' + 'e1c4fe' +
                 '9d8475e2af962b593c7744',
-            'private_key': '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAg' + 
+            'private_key': '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAg' +
                 'EAAoIBAQCkTta0oWaWwtY+\nHTQEpvs5JJILd/rqR6w6+ByK6F2E/rjOPv3fv5Lr+hM1ThMNv/iIkK2BQWjXI5ut\n' +
                 'RtoL0X2zCnkaC4z3hgRN86fnbNzCLx0Y94k6S3ykMzVCQhdCWC3mqq8zc9rH7/4v\nETkMkvvAQ72cc8+hXnvW19cD8feIvGLLtarmRME52NJlFKQHpYKjnRuKU2oowxSQ\nAVXC3z6etmWbGdxXAJbYZ9bxKa22P7kavd5tNvxJxQf1U6VjksWheHXrx+d2Cg5J\nl7p5Q8i2VSqg3wdtKNcVe/EwBGT1gCSLN6kOgnQ1mZP+I75KoCThfDn2uaYwRYHT\nqcSOE/SdAgMBAAECggEACAcOVfPn6ky76jLWD7Yghw5CkK+YCoWCW09888uVPGa0\nHObx9/bJFOpDjLKqCO+6XAbgZGJ9XrvGbABX0nK11tYFXs5RhXj1Y+FPAtPnsz1Z\nUmAGQv+mJ/NLrcT53Tlw94ZRvpWV+JxTLho60BmHuoo93xya09a3RuvztADbDIri\n+E0A8JaWAN3tuuio/dNm0UPAltBJSF7nTxoQTSUi6ne/34qIIrQc6dN5onjerRDU\nmuLpq9q5DzsXTD8fD78vnuDtX3x2e6w2r9bL4Zm0sBj5ICAh/hkC1R/FJh6ahvEn\n+LgNg4SDt0uCqk/A6S2bo1cgdLePoPSMUmRQqo4SBwKBgQDkqg5Umbx0aaNY/bg5\nC0no0+5TpTgjoDlhcvP9aqqjcMCvKzWKjmIsvSwITTGi7kzWXIjwjGyeKwyW0sLs\nz4KNsyvYJZwg5u4WRvXKFRlg5RypFGTyx6vIF9h0knse4ls0iNQVSTJD8gq5jXQc\n/IC78iLyD2p6nrhMVAVaIlcevwKBgQC38z/cN3Oelb8nqQntUd0IB1c73wdcHQ5s\nJPdTfC1n15ZTYdEH/3UR7hwXoRoJ0LtFcvKlAOTWrftqmncZsjPY/RYnm0XZG8Hf\n04xJ6sB5kiSb2FGvIohpXZEfKRhC8/ilOuhBe7iWQIBysDnGVvkWc5//VkChnEMu\nFE08Ku3fowKBgQCRUSVUTHNAhBXkKzHVRsBMr8qo67nWoi91J6m5Zf1VawV5DPu0\ntzHa/smp6Ozff5PjMuFwBb3NcsxIWV65QlLUnIYDkjs7iabLD4OKTohXVKM3LJfO\n1mfr/IN56dFG2lFd/IrTkDXaikqYizW8aheh2YqtzHA9xvqWv1q7YlF9XwKBgGry\ns0M+visKlzvgzNO8z8x2MCKwFeBZSGRZza4tOVzxfAX4jgafYJpPHOgkEzZ3tBm5\nrhd/AI1MVCtzqSE4eWqEItheL2r992dB4IOtR8Cm1kABseQoKLVR4CkExIVQwVSX\nfidsXjKFR+jmSoDlWibSjMhwhl0vs+NbjFgaAXkPAoGARpieI8L/C49oO5PdKYlo\nsty9kg1+jxnsy46ToabmTxwaVh5iI6JJY2ePtCAr9VY8EWuQyl75dSYsGuHsztAE\nELUUP3i8g8DHyD063B7HzWvt5KXajeDGu95NEScZ6R6jATLNcDuNnY2llWq9lxB5\nW5H1ANiuKjCQrzgS8IS7Wns=\n-----END PRIVATE KEY-----\n',
             'client_email': 'wheelacc@wheel-431014.iam.gserviceaccount.com',
@@ -113,6 +135,7 @@
         let names_of_wheels
         let authToken
         let state
+        let filter_state = ''
         async function start() {
             authToken = await fetchAuthToken()
             let [wheels, wheel_names] = await getWheels(authToken)
@@ -129,7 +152,7 @@
                 button.className = 'button'
                 document.body.appendChild(button);
                 btns.push(button)
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     for (let btn of btns) {
                         btn.className = 'button'
                         btn.style.boxShadow = 'none'
@@ -137,7 +160,7 @@
                     }
                     this.className = 'selected-button'
                     this.style.marginLeft = '10px'
-                    
+
                     this.style.boxShadow = '0 0 0 5px rgba(1.0, 0, 0, 0.3)'
                     cleanslate()
                     btn[1](wheels, wheel_names, authToken)
@@ -155,7 +178,7 @@
             for (let wheel_name of wheel_names) {
                 let option = document.createElement('option')
                 option.value = wheel_name
-                option.innerText = wheel_name 
+                option.innerText = wheel_name
                 wheel_dropdown.appendChild(option)
             }
             wheel_dropdown_container.appendChild(wheel_dropdown)
@@ -250,7 +273,7 @@
             if (Math.max(...counts) == 0) {
                 // if counts are all zero, the range in readSheet below won't be correct. 
                 // instead, just populate empty for all wheels.
-                table = {values: headers.values[0].map((_, __) => [])}
+                table = { values: headers.values[0].map((_, __) => []) }
             } else {
                 // then, read the table
                 table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
@@ -305,7 +328,7 @@
                 spin_counter[wheel] += 1
                 numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
             })
-            
+
             numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
             container.appendChild(numSpins)
 
@@ -379,6 +402,28 @@
             document.body.appendChild(container)
             document.getElementById('wheel-dropdown').style.display = 'none'
 
+            let search = document.createElement('input')
+            search.type = 'text';
+            search.placeholder = 'filter...';
+            search.style.marginLeft = '10px'
+            search.style.fontSize = '18px'
+            search.style.marginTop = '15px'
+            search.value = filter_state
+            container.appendChild(search)
+
+            search.addEventListener('keyup', function () {
+                document.getElementById('spins-container').remove()
+                filter_state = search.value
+                generate_entries(container, wheels, wheel_names, authToken, filter_state)
+            })
+            generate_entries(container, wheels, wheel_names, authToken, filter_state)
+        }
+
+        function generate_entries(container, wheels, wheel_names, authToken, filter) {
+            let spins = document.createElement('div')
+            spins.id = 'spins-container'
+            container.appendChild(spins)
+
             let tasks_to_remove = {}
             for (let i = 0; i < wheel_names.length; i++) {
                 tasks_to_remove[wheel_names[i]] = []
@@ -387,30 +432,47 @@
                 title.style.display = 'inline-block'
                 title.style.marginRight = '5px'
                 title.style.marginBottom = '1vh'
-                container.appendChild(title)
+                spins.appendChild(title)
 
                 let count = document.createElement('p')
-                count.innerText = '(' + wheels[wheel_names[i]].length + ')'
                 count.style.display = 'inline'
-                container.appendChild(count)
+                spins.appendChild(count)
+                let x = 0
                 for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
+                    if (filter !== '') {
+                        if (!wheels[wheel_names[i]][j].toUpperCase().includes(filter.toUpperCase())) {
+                            continue;
+                        }
+                    }
+
                     let entry = document.createElement('div')
-                    if (j % 2 === 0) {
+                    let dark = x % 2 === 0
+                    if (dark) {
                         entry.style.background = 'darkgrey'
                     } else {
                         entry.style.background = 'lightgrey'
                     }
+                    x++
+
                     entry.style.maxWidth = '1200px'
                     entry.style.verticalAlign = 'middle'
                     entry.style.alignItems = 'center'
                     entry.style.display = 'flex'
                     entry.style.height = 'auto'
-                    container.appendChild(entry)
+                    spins.appendChild(entry)
 
                     let task = document.createElement('div')
                     task.style.fontSize = '16px'
                     task.style.marginRight = '30px'
-                    task.innerText = wheels[wheel_names[i]][j]
+                    
+                    if (filter !== '') {
+                        let text = wheels[wheel_names[i]][j]
+                        let highlighted_text = text.replaceAll(new RegExp(filter, 'gi'), match => '<span style="background-color: yellow;">' + match + '</span>')
+                        task.innerHTML = highlighted_text
+                    } else {
+                        task.innerText = wheels[wheel_names[i]][j]
+                    }
+                    
                     task.style.display = 'inline-block'
                     task.style.width = 'auto'
                     task.style.wordWrap = 'break-word'
@@ -427,7 +489,7 @@
                         console.log(entry.style.background)
                         if (!selected) {
                             selected = true
-                            if (j % 2 === 0) {
+                            if (dark) {
                                 entry.style.background = '#F07971'
                             } else {
                                 entry.style.background = '#FAA0A0'
@@ -435,7 +497,7 @@
                             tasks_to_remove[wheel_names[i]].push(j)
                         } else {
                             selected = false
-                            if (j % 2 === 0) {
+                            if (dark) {
                                 entry.style.background = 'darkgrey'
                             } else {
                                 entry.style.background = 'lightgrey'
@@ -443,6 +505,12 @@
                             removeItem(tasks_to_remove[wheel_names[i]], j)
                         }
                     })
+                }
+                if (x === 0) {
+                    title.remove()
+                    count.remove()
+                } else {
+                    count.innerText = '(' + x + ')'
                 }
             }
 
@@ -454,7 +522,7 @@
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
             button.className = 'button'
-            container.appendChild(button)
+            spins.appendChild(button)
             button.addEventListener('click', function () {
                 wheel_history.push(JSON.parse(JSON.stringify(wheels)))
                 for (let i = 0; i < wheel_names.length; i++) {
@@ -467,8 +535,8 @@
                     wheels[wheel_names[i]] = new_wheel
                 }
                 writeSheet(wheels_to_data(wheels, wheel_names), authToken)
-                document.getElementById('container').remove()
-                remove(wheels, wheel_names, authToken)
+                document.getElementById('spins-container').remove()
+                generate_entries(container, wheels, wheel_names, authToken, filter)
             })
         }
 
@@ -509,7 +577,7 @@
             numinput.style.marginTop = '15px'
             numinput.style.marginLeft = '10px'
             numinput.style.fontSize = '16px'
-            numinput.addEventListener('keyup', function() {
+            numinput.addEventListener('keyup', function () {
                 numinput.value = numinput.value.replace(/[^0-9]/g, '');
             })
             container.appendChild(numinput)
@@ -524,16 +592,14 @@
             container.appendChild(button)
 
             let output = document.createElement('div')
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 if (rand_dropdown.value == 'coinflip') {
                     alert(Math.random() < 0.5 ? 'Heads' : 'Tails')
                 }
                 if (rand_dropdown.value == 'random-ordering') {
-
                     alert(getRandomOrdering(parseInt(numinput.value)))
                 }
                 if (rand_dropdown.value == 'random-number') {
-
                     alert(getRandomNumber(1, parseInt(numinput.value)))
                 }
             })
@@ -544,18 +610,31 @@
         }
 
         function getRandomOrdering(n) {
-    // Create an array of numbers from 1 to n
-    let arr = Array.from({ length: n }, (_, i) => i + 1);
+            // Create an array of numbers from 1 to n
+            let arr = Array.from({ length: n }, (_, i) => i + 1);
 
-    // Shuffle the array using the Fisher-Yates algorithm
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
-    }
+            // Shuffle the array using the Fisher-Yates algorithm
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+            }
 
-    return arr;
-}
+            return arr;
+        }
 
+        function findAllMatches(string, substring) {
+            let lowerString = string.toLowerCase()
+            let lowerSubstring = substring.toLowerCase()
+            let positions = []
+            let position = lowerString.indexOf(lowerSubstring)
+
+            while (position !== -1) {
+                positions.push(position)
+                position = lowerString.indexOf(lowerSubstring, position + 1)
+                console.log('stuck')
+            }
+            return positions
+        }
 
         // alert on all errors
         window.addEventListener('error', (e) => alert(e.message))
