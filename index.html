@@ -19,45 +19,28 @@
         textarea {
             font-size: 16px;
             border-radius: 8px;
-            /* Rounded corners */
             border: 1px solid #ddd;
-            /* Light border */
             background-color: #fff;
-            /* White background */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            /* Add a slight shadow */
             resize: none;
-            /* Prevent resizing */
             width: max-content;
             margin-left: 10px;
             margin-top: 10px;
         }
 
-        /* Basic button styling */
         button {
             background-color: #d3d3d3;
-            /* Light grey background */
             color: #000000;
-            /* Black text */
             border: 1px solid #000000;
-            /* Black border */
             padding: 10px 15px;
-            /* Padding for better appearance */
             font-size: 16px;
-            /* Font size */
             font-family: Arial, sans-serif;
-            /* Font family */
             text-align: center;
-            /* Center text */
             cursor: pointer;
-            /* Pointer cursor on hover */
             border-radius: 4px;
-            /* Rounded corners */
             transition: background-color 0.3s ease;
-            /* Smooth color transition */
         }
 
-        /* Button hover effect */
         .button:hover {
             background-color: #f1f1f1;
         }
@@ -72,18 +55,17 @@
             }
         }
 
-        /* Universal select styling */
         select {
-            background-color: #e0e0e0; /* Light grey background */
-            color: #333; /* Dark text color for contrast */
-            padding: 8px 12px; /* Adjust padding to fit text better */
-            border: 1px solid #000000; /* Grey border */
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 8px 12px;
+            border: 1px solid #000000;
             border-radius: 4px;
             font-size: 16px;
             cursor: pointer;
             outline: none;
             position: relative;
-            width: auto; /* Allow width to adjust based on content */
+            width: auto;
         }
     </style>
     </style>
@@ -299,11 +281,27 @@
             for (let i = 0; i < wheel_names.length; i++) {
                 wheels[wheel_names[i]] = []
                 for (let j = 0; j < counts[i]; j++) {
-                    wheels[wheel_names[i]].push(table.values[i][j])
+                    console.log(table.values[i][j])
+                    if (isJson(table.values[i][j])) {
+                        console.log('foundjson')
+                        wheels[wheel_names[i]].push(JSON.parse(table.values[i][j]))
+                    } else {
+                        console.log('no json')
+                        wheels[wheel_names[i]].push(table.values[i][j])
+                    }
                 }
             }
             console.log(wheels)
             return [wheels, wheel_names]
+        }
+
+        function isJson(str) {
+            try {
+                let value = JSON.parse(str)
+                return typeof value === 'object' && value !== null
+            } catch (e) {
+                return false
+            }
         }
 
         function spins(wheels, wheel_names) {
@@ -335,11 +333,18 @@
             button.addEventListener('click', function () {
                 let wheel = document.getElementById('wheel-dropdown').value
                 if (wheels[wheel].length === 0) {
-                    output.innerText = 'no tasks in this wheel'
-                    return
+                    throw new Error('no tasks in this wheel')
                 }
-                let randomNumber = Math.floor(Math.random() * wheels[wheel].length)
-                current_spin = wheels[wheel][randomNumber]
+                let spin = wheels[wheel][get_random_spin(wheels[wheel])]
+                if (typeof spin === 'string') {
+                    current_spin = spin
+                } else {
+                    if (spin['message'] !== undefined) {
+                        current_spin = spin['message']
+                    } else {
+                        current_spin = JSON.stringify(spin)
+                    }
+                }
                 output.innerText = current_spin
                 spin_counter[wheel] += 1
                 numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
@@ -373,7 +378,16 @@
                 textbox.rows = 5
                 textbox.cols = 30
             }
-            div.appendChild(textbox);
+            div.appendChild(textbox)
+
+            let weight_or_percentage = document.createElement('input')
+            weight_or_percentage.type = 'text';
+            weight_or_percentage.placeholder = 'add weight or percentage(%)';
+            weight_or_percentage.style.marginLeft = '10px'
+            weight_or_percentage.style.fontSize = '18px'
+            weight_or_percentage.style.marginTop = '15px'
+            weight_or_percentage.value = ''
+            container.appendChild(weight_or_percentage)
 
             let button = document.createElement('button')
             button.id = 'add'
@@ -391,10 +405,81 @@
                 }
                 wheel_history.push(JSON.parse(JSON.stringify(wheels)))
                 let wheel = document.getElementById('wheel-dropdown').value
-                wheels[wheel].push(textbox.value)
+                if (weight_or_percentage.value === '') {
+                    wheels[wheel].push(textbox.value)
+                } else {
+                    if (weight_or_percentage.value.endsWith('%')) {
+                        let percentage = parseFloat(weight_or_percentage.value.substring(0, weight_or_percentage.value.length - 1))
+                        if (percentage <= 0) {
+                            throw new Error('invalid percentage: must be greater than 0%')
+                        }
+                        let total_percentage = 0
+                        for (let spin of wheels[wheel]) {
+                            if (typeof spin === 'string') {
+                                continue
+                            }
+                            if (spin['percentage'] !== undefined) {
+                                total_percentage += spin['percentage']
+                            }
+                        }
+                        total_percentage += percentage
+                        if (total_percentage >= 100) {
+                            throw new Error('invalid percentage: percentages in ' + wheel + ' wheel >= 100%')
+                        }
+                        wheels[wheel].push({ 'message': textbox.value, 'percentage': percentage })
+                    } else {
+                        let weight = parseFloat(weight_or_percentage.value)
+                        if (weight <= 0) {
+                            throw new Error('invalid weight: must be greater than 0')
+                        }
+                        wheels[wheel].push({ 'message': textbox.value, 'weight': parseFloat(weight_or_percentage.value) })
+                    }
+                }
                 writeSheet(wheels_to_data(wheels, wheel_names), authToken)
                 textbox.value = ''
+                weight_or_percentage.value = ''
             })
+        }
+
+        function get_random_spin(wheel) {
+            let rand = Math.random()
+            let percentage_sum = 0
+            let weight_total = 0
+            for (let i = 0; i < wheel.length; i++) {
+                let spin = wheel[i]
+                if (typeof spin === 'string') {
+                    weight_total += 1
+                } else if (spin['weight'] !== undefined) {
+                    weight_total += spin['weight']
+                } else if (spin['percentage'] !== undefined) {
+                    console.log('here')
+                    percentage_sum += spin['percentage'] / 100
+                    if (rand < percentage_sum) {
+                        return i
+                    }
+                } else {
+                    weight_total += 1
+                }
+            }
+            // normalize rand, discounting percentages, then scale by weight total
+            rand = (rand - percentage_sum) / (1 - percentage_sum) * weight_total
+            let weight_sum = 0
+            for (let i = 0; i < wheel.length; i++) {
+                let spin = wheel[i]
+                if (typeof spin === 'string') {
+                    weight_sum += 1
+                } else if (spin['weight'] !== undefined) {
+                    weight_sum += spin['weight']
+                } else if (spin['percentage'] !== undefined) {
+                    continue
+                } else {
+                    weight_sum += 1
+                }
+                if (rand < weight_sum) {
+                    return i
+                }
+            }
+            return wheel.length - 1
         }
 
         function wheels_to_data(wheels, wheel_names) {
@@ -404,7 +489,11 @@
                 col.push(wheel_names[x])
                 col.push(wheels[wheel_names[x]].length + '')
                 for (let y = 0; y < wheels[wheel_names[x]].length; y++) {
-                    col.push(wheels[wheel_names[x]][y])
+                    if (typeof wheels[wheel_names[x]][y] === 'string') {
+                        col.push(wheels[wheel_names[x]][y])
+                    } else {
+                        col.push(JSON.stringify(wheels[wheel_names[x]][y]))
+                    }
                 }
                 console.log(col)
                 data.push(col)
@@ -412,6 +501,7 @@
             return data
         }
 
+        let tasks_to_remove = {}
         function remove(wheels, wheel_names, authToken) {
             let container = document.createElement('div')
             container.id = 'container'
@@ -435,14 +525,23 @@
             generate_entries(container, wheels, wheel_names, authToken, filter_state)
         }
 
+        function escapeFilter(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        }
+
+        function escapeReplacement(string) {
+            return string.replace(/\$/g, '$$$$')
+        }
+
         function generate_entries(container, wheels, wheel_names, authToken, filter) {
             let spins = document.createElement('div')
             spins.id = 'spins-container'
             container.appendChild(spins)
-
-            let tasks_to_remove = {}
             for (let i = 0; i < wheel_names.length; i++) {
-                tasks_to_remove[wheel_names[i]] = []
+                if (tasks_to_remove[wheel_names[i]] === undefined) {
+                    tasks_to_remove[wheel_names[i]] = []
+                }
+
                 let title = document.createElement('h1')
                 title.innerText = wheel_names[i]
                 title.style.display = 'inline-block'
@@ -455,8 +554,26 @@
                 spins.appendChild(count)
                 let x = 0
                 for (let j = 0; j < wheels[wheel_names[i]].length; j++) {
+                    let text
+                    let weight
+                    let percentage
+                    if (typeof wheels[wheel_names[i]][j] === 'string') {
+                        text = wheels[wheel_names[i]][j]
+                    } else {
+                        if (wheels[wheel_names[i]][j]['message'] !== undefined) {
+                            text = wheels[wheel_names[i]][j]['message']
+                            if (wheels[wheel_names[i]][j]['weight'] !== undefined) {
+                                weight = wheels[wheel_names[i]][j]['weight']
+                            } else if (wheels[wheel_names[i]][j]['percentage'] !== undefined) {
+                                percentage = wheels[wheel_names[i]][j]['percentage']
+                            }
+                        } else {
+                            text = JSON.stringify(wheels[wheel_names[i]][j])
+                        }
+                    }
+
                     if (filter !== '') {
-                        if (!wheels[wheel_names[i]][j].toUpperCase().includes(filter.toUpperCase())) {
+                        if (!text.toUpperCase().includes(filter.toUpperCase())) {
                             continue;
                         }
                     }
@@ -480,15 +597,18 @@
                     let task = document.createElement('div')
                     task.style.fontSize = '16px'
                     task.style.marginRight = '30px'
-                    
+
                     if (filter !== '') {
-                        let text = wheels[wheel_names[i]][j]
-                        let highlighted_text = text.replaceAll(new RegExp(filter, 'gi'), match => '<span style="background-color: yellow;">' + match + '</span>')
-                        task.innerHTML = highlighted_text
-                    } else {
-                        task.innerText = wheels[wheel_names[i]][j]
+                        text = text.replaceAll(new RegExp(escapeFilter(filter), 'gi'),
+                            match => `<span style="background-color: yellow">${escapeReplacement(match)}</span>`)
                     }
-                    
+                    let selected = tasks_to_remove[wheel_names[i]].includes(j)
+                    if (weight !== undefined || percentage !== undefined) {
+                        let span_text = weight !== undefined ? `weight: ${weight}` : `odds: ${percentage}%`
+                        text += `<br><span style="background-color: black; color: ${getEntryColor(false, dark)}">${span_text}</span>`
+                    }
+                    task.innerHTML = text
+
                     task.style.display = 'inline-block'
                     task.style.width = 'auto'
                     task.style.wordWrap = 'break-word'
@@ -500,26 +620,17 @@
                     task.className = 'noselect'
                     entry.appendChild(task)
 
-                    let selected = false
+                    
+                    entry.style.background = getEntryColor(selected, dark)
                     entry.addEventListener('click', function () {
                         console.log(entry.style.background)
                         if (!selected) {
-                            selected = true
-                            if (dark) {
-                                entry.style.background = '#F07971'
-                            } else {
-                                entry.style.background = '#FAA0A0'
-                            }
                             tasks_to_remove[wheel_names[i]].push(j)
                         } else {
-                            selected = false
-                            if (dark) {
-                                entry.style.background = 'darkgrey'
-                            } else {
-                                entry.style.background = 'lightgrey'
-                            }
                             removeItem(tasks_to_remove[wheel_names[i]], j)
                         }
+                        selected = !selected
+                        entry.style.background = getEntryColor(selected, dark)
                     })
                 }
                 if (x === 0) {
@@ -552,8 +663,25 @@
                 }
                 writeSheet(wheels_to_data(wheels, wheel_names), authToken)
                 document.getElementById('spins-container').remove()
+                tasks_to_remove = {}
                 generate_entries(container, wheels, wheel_names, authToken, filter)
             })
+        }
+
+        function getEntryColor(selected, dark) {
+            if (selected) {
+                if (dark) {
+                    return '#F07971'
+                } else {
+                    return '#FAA0A0'
+                }
+            } else {
+                if (dark) {
+                    return 'darkgrey'
+                } else {
+                    return 'lightgrey'
+                }
+            }
         }
 
         function removeItem(arr, value) {
@@ -584,7 +712,7 @@
             rand_dropdown.id = 'rand-dropdown'
             rand_dropdown.appendChild(opt('random-ordering'))
             rand_dropdown.appendChild(opt('random-number'))
-            rand_dropdown.appendChild(opt('coinflip'))
+            rand_dropdown.appendChild(opt('coin-flip'))
             container.appendChild(rand_dropdown)
 
             let numinput = document.createElement('input')
@@ -609,20 +737,20 @@
 
             let output = document.createElement('div')
             button.addEventListener('click', function () {
-                if (rand_dropdown.value == 'coinflip') {
+                if (rand_dropdown.value === 'coin-flip') {
                     alert(Math.random() < 0.5 ? 'Heads' : 'Tails')
                 }
-                if (rand_dropdown.value == 'random-ordering') {
+                if (rand_dropdown.value === 'random-ordering') {
                     alert(getRandomOrdering(parseInt(numinput.value)))
                 }
-                if (rand_dropdown.value == 'random-number') {
+                if (rand_dropdown.value === 'random-number') {
                     alert(getRandomNumber(1, parseInt(numinput.value)))
                 }
             })
         }
 
         function getRandomNumber(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+            return Math.floor(Math.random() * (max - min + 1)) + min
         }
 
         function getRandomOrdering(n) {
