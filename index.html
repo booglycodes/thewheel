@@ -142,7 +142,7 @@
             names_of_wheels = wheel_names
             let btns = []
             state = 'spin'
-            for (let btn of [['add', add], ['spin', spins], ['remove', remove], ['rand', rand]]) {
+            for (let btn of [['add', add], ['spin', spins], ['remove', remove], ['random', rand]]) {
                 let button = document.createElement('button')
                 button.id = btn[0]
                 button.textContent = btn[0]
@@ -181,6 +181,7 @@
                 option.innerText = wheel_name
                 wheel_dropdown.appendChild(option)
             }
+            wheel_dropdown.value = 'bigly'
             wheel_dropdown_container.appendChild(wheel_dropdown)
             document.body.appendChild(wheel_dropdown_container)
             spins(wheels, wheel_names)
