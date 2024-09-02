@@ -246,7 +246,6 @@
         }
 
         async function writeSheet(data, authToken) {
-            console.log(data)
             let response = await fetch(GOOGLE_SHEETS_URL.format(WHEEL_SHEETS_ID, 'A1', 'valueInputOption=RAW'), {
                 method: 'PUT',
                 headers: {
@@ -276,22 +275,17 @@
                 // then, read the table
                 table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
             }
-            console.log(table)
             let wheels = {}
             for (let i = 0; i < wheel_names.length; i++) {
                 wheels[wheel_names[i]] = []
                 for (let j = 0; j < counts[i]; j++) {
-                    console.log(table.values[i][j])
                     if (isJson(table.values[i][j])) {
-                        console.log('foundjson')
                         wheels[wheel_names[i]].push(JSON.parse(table.values[i][j]))
                     } else {
-                        console.log('no json')
                         wheels[wheel_names[i]].push(table.values[i][j])
                     }
                 }
             }
-            console.log(wheels)
             return [wheels, wheel_names]
         }
 
@@ -382,9 +376,9 @@
 
             let weight_or_percentage = document.createElement('input')
             weight_or_percentage.type = 'text';
-            weight_or_percentage.placeholder = 'add weight or percentage(%)';
+            weight_or_percentage.placeholder = 'weight or percentage(%)';
             weight_or_percentage.style.marginLeft = '10px'
-            weight_or_percentage.style.fontSize = '18px'
+            weight_or_percentage.style.fontSize = '16px'
             weight_or_percentage.style.marginTop = '15px'
             weight_or_percentage.value = ''
             container.appendChild(weight_or_percentage)
@@ -410,6 +404,9 @@
                 } else {
                     if (weight_or_percentage.value.endsWith('%')) {
                         let percentage = parseFloat(weight_or_percentage.value.substring(0, weight_or_percentage.value.length - 1))
+                        if (percentage === NaN) {
+                            throw new Error('invalid percentage: not a number')
+                        }
                         if (percentage <= 0) {
                             throw new Error('invalid percentage: must be greater than 0%')
                         }
@@ -429,6 +426,9 @@
                         wheels[wheel].push({ 'message': textbox.value, 'percentage': percentage })
                     } else {
                         let weight = parseFloat(weight_or_percentage.value)
+                        if (weight === NaN) {
+                            throw new Error('invalid weight: not a number')
+                        }
                         if (weight <= 0) {
                             throw new Error('invalid weight: must be greater than 0')
                         }
@@ -452,7 +452,6 @@
                 } else if (spin['weight'] !== undefined) {
                     weight_total += spin['weight']
                 } else if (spin['percentage'] !== undefined) {
-                    console.log('here')
                     percentage_sum += spin['percentage'] / 100
                     if (rand < percentage_sum) {
                         return i
@@ -495,7 +494,6 @@
                         col.push(JSON.stringify(wheels[wheel_names[x]][y]))
                     }
                 }
-                console.log(col)
                 data.push(col)
             }
             return data
@@ -620,10 +618,8 @@
                     task.className = 'noselect'
                     entry.appendChild(task)
 
-                    
                     entry.style.background = getEntryColor(selected, dark)
                     entry.addEventListener('click', function () {
-                        console.log(entry.style.background)
                         if (!selected) {
                             tasks_to_remove[wheel_names[i]].push(j)
                         } else {
@@ -721,6 +717,7 @@
             numinput.style.marginTop = '15px'
             numinput.style.marginLeft = '10px'
             numinput.style.fontSize = '16px'
+            numinput.style.width = '100px'
             numinput.addEventListener('keyup', function () {
                 numinput.value = numinput.value.replace(/[^0-9]/g, '');
             })
@@ -728,7 +725,7 @@
 
             let button = document.createElement('button')
             button.textContent = 'go!'
-            button.style.marginLeft = '50px'
+            button.style.marginLeft = '10px'
             button.style.marginTop = '20px'
             button.style.fontSize = '16px'
             button.style.cursor = 'pointer'
