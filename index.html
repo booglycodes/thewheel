@@ -263,7 +263,7 @@
 
         async function getWheels(authToken) {
             // first, read headers, that tells us the names of the wheels and how many elements are in each wheel
-            let headers = await readSheet('A1:C2', authToken, 'majorDimension=ROWS')
+            let headers = await readSheet('A1:D2', authToken, 'majorDimension=ROWS')
             let wheel_names = headers.values[0]
             let counts = headers.values[1].map((val, _) => parseInt(val))
             let table
@@ -273,7 +273,7 @@
                 table = { values: headers.values[0].map((_, __) => []) }
             } else {
                 // then, read the table
-                table = await readSheet('A3:C' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
+                table = await readSheet('A3:D' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
             }
             let wheels = {}
             for (let i = 0; i < wheel_names.length; i++) {
