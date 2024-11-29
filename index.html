@@ -90,9 +90,6 @@
             </svg><a style="font-size: small; vertical-align: middle; padding-bottom: 10px;">undo</a>
         </a>
     </h1>
-
-    <script language='JavaScript' type='text/javascript'
-        src='https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js'></script>
     <script>
         const OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token'
         const GOOGLE_SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
@@ -135,8 +132,11 @@
         let filter_state = ''
         let random_dropdown_state = 'random-number'
         async function start() {
+            console.log('started')
             authToken = await fetchAuthToken()
+            console.log('got auth token')
             let [wheels, wheel_names] = await getWheels(authToken)
+            console.log('got wheels')
             names_of_wheels = wheel_names
             let btns = []
             state = 'spin'
@@ -215,20 +215,81 @@
             document.getElementById('container').remove()
         }
 
+        const JwtSigner = (function () {
+            // Helper: Convert PEM to ArrayBuffer
+            function pemToArrayBuffer(pem) {
+                const b64 = pem.replace(/-----.*?-----/g, "").replace(/\s+/g, "");
+                const binary = atob(b64);
+                const buffer = new ArrayBuffer(binary.length);
+                const view = new Uint8Array(buffer);
+                for (let i = 0; i < binary.length; i++) {
+                    view[i] = binary.charCodeAt(i);
+                }
+                return buffer;
+            }
+
+            // Helper: Base64url encode a string
+            function base64UrlEncode(input) {
+                return btoa(input)
+                    .replace(/=/g, '')
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_');
+            }
+
+            // Helper: Create the header and payload parts of a JWT
+            function createJwtParts(header, payload) {
+                const encodedHeader = base64UrlEncode(JSON.stringify(header));
+                const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+                return `${encodedHeader}.${encodedPayload}`;
+            }
+
+            // Main function: Sign a JWT
+            async function sign(privateKeyPem, payload) {
+                // Define the header
+                const header = { alg: "RS256", typ: "JWT" };
+
+                // Create the unsigned JWT parts
+                const dataToSign = createJwtParts(header, payload);
+
+                // Import the private key
+                const privateKey = await window.crypto.subtle.importKey(
+                    "pkcs8",
+                    pemToArrayBuffer(privateKeyPem),
+                    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+                    false,
+                    ["sign"]
+                );
+
+                // Sign the JWT parts
+                const signature = await window.crypto.subtle.sign(
+                    "RSASSA-PKCS1-v1_5",
+                    privateKey,
+                    new TextEncoder().encode(dataToSign)
+                );
+
+                // Convert signature to base64url format
+                const encodedSignature = base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+
+                // Return the full signed JWT
+                return `${dataToSign}.${encodedSignature}`;
+            }
+
+            // Expose the `sign` function
+            return { sign };
+        })();
+
         // see https://stackoverflow.com/questions/28751995/how-to-obtain-google-service-account-access-token-javascript
         async function fetchAuthToken() {
-            let header = {
-                'alg': 'RS256',
-                'typ': 'JWT'
-            }
             let claim = {
                 aud: OAUTH_URL,
                 scope: 'https://www.googleapis.com/auth/spreadsheets',
                 iss: SERVICE_ACCOUNT.client_email,
-                exp: KJUR.jws.IntDate.get('now + 1hour'),
-                iat: KJUR.jws.IntDate.get('now')
+                exp: Math.floor(Date.now() / 1000) + 3600,
+                iat: Date.now() / 1000
             }
-            let jws = KJUR.jws.JWS.sign(null, JSON.stringify(header), JSON.stringify(claim), SERVICE_ACCOUNT.private_key)
+            let jws = await JwtSigner.sign(SERVICE_ACCOUNT.private_key, claim)
+            console.log(jws)
+
             let response = await fetch(OAUTH_URL, {
                 method: 'POST',
                 headers: {
