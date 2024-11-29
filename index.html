@@ -133,6 +133,7 @@
         let authToken
         let state
         let filter_state = ''
+        let random_dropdown_state = 'random-number'
         async function start() {
             authToken = await fetchAuthToken()
             let [wheels, wheel_names] = await getWheels(authToken)
@@ -203,6 +204,14 @@
 
         function cleanslate() {
             document.getElementById('wheel-dropdown').style.display = ''
+            if (all_option != null) {
+                if (document.getElementById('wheel-dropdown').value === 'all') {
+                    document.getElementById('wheel-dropdown').value = prev_wheel_before_all
+                    prev_wheel_before_all = null
+                }
+                document.getElementById('wheel-dropdown').removeChild(all_option)
+                all_option = null
+            }
             document.getElementById('container').remove()
         }
 
@@ -262,27 +271,23 @@
         }
 
         async function getWheels(authToken) {
-            // first, read headers, that tells us the names of the wheels and how many elements are in each wheel
-            let headers = await readSheet('A1:D2', authToken, 'majorDimension=ROWS')
-            let wheel_names = headers.values[0]
-            let counts = headers.values[1].map((val, _) => parseInt(val))
-            let table
-            if (Math.max(...counts) == 0) {
-                // if counts are all zero, the range in readSheet below won't be correct. 
-                // instead, just populate empty for all wheels.
-                table = { values: headers.values[0].map((_, __) => []) }
-            } else {
-                // then, read the table
-                table = await readSheet('A3:D' + (Math.max(...counts) + 2), authToken, 'majorDimension=COLUMNS')
-            }
+            // this assumes we have < 26 wheels and no wheel contains more than 1000 items
+            let data = await readSheet('A1:Z1000', authToken, 'majorDimension=COLUMNS')
+            console.log(data)
             let wheels = {}
-            for (let i = 0; i < wheel_names.length; i++) {
-                wheels[wheel_names[i]] = []
-                for (let j = 0; j < counts[i]; j++) {
-                    if (isJson(table.values[i][j])) {
-                        wheels[wheel_names[i]].push(JSON.parse(table.values[i][j]))
+            let wheel_names = []
+            for (let wheel of data.values) {
+                let wheel_name = wheel.shift()
+                wheel_names.push(wheel_name)
+                wheels[wheel_name] = []
+                
+                let count = parseInt(wheel.shift())
+                for (let i = 0; i < count; i++) {
+                    let item = wheel.shift()
+                    if (isJson(item)) {
+                        wheels[wheel_name].push(JSON.parse(item))
                     } else {
-                        wheels[wheel_names[i]].push(table.values[i][j])
+                        wheels[wheel_name].push(item)
                     }
                 }
             }
@@ -298,6 +303,7 @@
             }
         }
 
+        let created_wheel_dropdown_callback_for_spin = false
         function spins(wheels, wheel_names) {
             let container = document.createElement('div')
             container.id = 'container'
@@ -341,10 +347,21 @@
                 }
                 output.innerText = current_spin
                 spin_counter[wheel] += 1
-                numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
+                numSpins.textContent = 'Spins: ' + spin_counter[wheel]
             })
 
-            numSpins.textContent = 'Spins: ' + JSON.stringify(spin_counter)
+            if (!created_wheel_dropdown_callback_for_spin) {
+                document.getElementById('wheel-dropdown').addEventListener('change', () => {
+                    if (state === 'spin') {
+                        let wheel = document.getElementById('wheel-dropdown').value
+                        numSpins.textContent = 'Spins: ' + spin_counter[wheel]
+                    }
+                })
+                created_wheel_dropdown_callback_for_spin = true
+            }
+
+            let wheel = document.getElementById('wheel-dropdown').value
+            numSpins.textContent = 'Spins: ' + spin_counter[wheel]
             container.appendChild(numSpins)
 
             let output = document.createElement('div')
@@ -500,11 +517,15 @@
         }
 
         let tasks_to_remove = {}
+        let wheels_to_generate_for_remove
+        let all_option = null
+        let created_wheel_dropdown_callback_for_remove = false
+        let remove_container = null
+        let prev_wheel_before_all = null
         function remove(wheels, wheel_names, authToken) {
-            let container = document.createElement('div')
-            container.id = 'container'
-            document.body.appendChild(container)
-            document.getElementById('wheel-dropdown').style.display = 'none'
+            remove_container = document.createElement('div')
+            remove_container.id = 'container'
+            document.body.appendChild(remove_container)
 
             let search = document.createElement('input')
             search.type = 'text';
@@ -513,14 +534,37 @@
             search.style.fontSize = '18px'
             search.style.marginTop = '15px'
             search.value = filter_state
-            container.appendChild(search)
+            remove_container.appendChild(search)
 
+            all_option = document.createElement('option')
+            all_option.value = 'all'
+            all_option.innerText = 'all'
+            document.getElementById('wheel-dropdown').appendChild(all_option)
+            wheels_to_generate_for_remove = [document.getElementById('wheel-dropdown').value]
+            prev_wheel_before_all = document.getElementById('wheel-dropdown').value
             search.addEventListener('keyup', function () {
                 document.getElementById('spins-container').remove()
                 filter_state = search.value
-                generate_entries(container, wheels, wheel_names, authToken, filter_state)
+                generate_entries(remove_container, wheels, wheels_to_generate_for_remove, authToken, filter_state)
             })
-            generate_entries(container, wheels, wheel_names, authToken, filter_state)
+            if (!created_wheel_dropdown_callback_for_remove) {
+                document.getElementById('wheel-dropdown').addEventListener('change', function() {
+                    if (state === 'remove') {
+                        document.getElementById('spins-container').remove()
+                        if (document.getElementById('wheel-dropdown').value === 'all') {
+                            wheels_to_generate_for_remove = wheel_names
+                        } else {
+                            wheels_to_generate_for_remove = [document.getElementById('wheel-dropdown').value]
+                            prev_wheel_before_all = document.getElementById('wheel-dropdown').value
+                        }
+                        console.log(wheels_to_generate_for_remove)
+                        generate_entries(remove_container, wheels, wheels_to_generate_for_remove, authToken, filter_state)
+                    }
+                })
+                created_wheel_dropdown_callback_for_remove = true
+            }
+
+            generate_entries(remove_container, wheels, wheels_to_generate_for_remove, authToken, filter_state)
         }
 
         function escapeFilter(string) {
@@ -706,10 +750,15 @@
             rand_dropdown.style.marginLeft = '10px'
             rand_dropdown.style.fontSize = '16px'
             rand_dropdown.id = 'rand-dropdown'
-            rand_dropdown.appendChild(opt('random-ordering'))
             rand_dropdown.appendChild(opt('random-number'))
+            rand_dropdown.appendChild(opt('random-ordering'))
             rand_dropdown.appendChild(opt('coin-flip'))
             container.appendChild(rand_dropdown)
+            rand_dropdown.value = random_dropdown_state
+            rand_dropdown.addEventListener('change', function() {
+                random_dropdown_state = rand_dropdown.value
+            })
+
 
             let numinput = document.createElement('input')
             numinput.type = 'number'
