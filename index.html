@@ -365,12 +365,13 @@
         }
 
         let created_wheel_dropdown_callback_for_spin = false
+        let numSpins = null
         function spins(wheels, wheel_names) {
             let container = document.createElement('div')
             container.id = 'container'
             document.body.appendChild(container)
 
-            let numSpins = document.createElement('div')
+            numSpins = document.createElement('div')
             numSpins.style.marginTop = '10px'
             numSpins.style.marginLeft = '10px'
             numSpins.style.marginBottom = '10px'
@@ -413,9 +414,11 @@
 
             if (!created_wheel_dropdown_callback_for_spin) {
                 document.getElementById('wheel-dropdown').addEventListener('change', () => {
+                    
                     if (state === 'spin') {
                         let wheel = document.getElementById('wheel-dropdown').value
                         numSpins.textContent = 'Spins: ' + spin_counter[wheel]
+                        console.log('spin change to ' + spin_counter[wheel])
                     }
                 })
                 created_wheel_dropdown_callback_for_spin = true
